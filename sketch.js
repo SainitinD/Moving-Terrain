@@ -7,7 +7,7 @@ const terrainRange = 100;
 const width = 800;
 
 // tile Levels
-const skyLevel = -60;
+const skyLevel = -45;
 const treeLevel = -50;
 const sandLevel = -15;
 const waterLevel = 5;
@@ -28,6 +28,7 @@ const forestColor = "#6D973E";
 const waterColor = "#1098A688";
 const deepWaterColor = "#023ACA";
 const snowColor = "#ffffff";
+const cloudColor = "#ffffffa6";
 
 // generation logic
 const yOffset = 2 * terrainRange;
@@ -83,6 +84,7 @@ function drawTerrain() {
       push();
       drawBlock(x, y, z);
       drawUnderground(y);
+      drawClouds(x, z);
       pop();
     }
   }
@@ -105,6 +107,22 @@ function drawUnderground(y) {
   }
   box(boxSize, boxesUntilBedrock - boxSize, boxSize);
   translate(0, -boxesUntilBedrock / 2, 0);
+}
+
+function drawClouds(x, z) {
+  translate(0, skyLevel * 2, 0);
+  let cloudY =
+    (noise(
+      x * resolutionVal + seed + 5000 + terrainChangeSpeed,
+      z * resolutionVal + seed + 5000
+    ) -
+      0.5) *
+    yOffset;
+
+  if (cloudY < skyLevel) {
+    fill(cloudColor);
+    box(boxSize, boxSize, boxSize, 100);
+  }
 }
 
 function getTerrainColor(y) {
