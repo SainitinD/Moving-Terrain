@@ -31,7 +31,7 @@ const snowColor = "#ffffff";
 const cloudColor = "#ffffffa6";
 
 // generation logic
-const yOffset = 2 * terrainRange;
+const yMultiplier = 2 * terrainRange;
 const xOffset = 100;
 const x0 = -width / 2 + xOffset;
 const x1 = width / 2 - xOffset;
@@ -60,6 +60,7 @@ function initializeVars() {
 
 function draw() {
   background(0);
+  terrainChangeSpeed = frameCount * 0.08;
   drawTerrain();
   orbitControl();
 }
@@ -68,13 +69,7 @@ function drawTerrain() {
   // draw terrain
   for (let x = x0; x < x1; x += boxSize) {
     for (let z = z0; z < z1; z += boxSize) {
-      let y =
-        (noise(
-          x * resolutionVal + seed + terrainChangeSpeed,
-          z * resolutionVal + seed
-        ) -
-          0.5) *
-        yOffset;
+      let y = getNoiseValue(x, z, 0, yMultiplier);
 
       // setup
       getTerrainColor(y);
@@ -85,7 +80,13 @@ function drawTerrain() {
       drawBlock(x, y, z);
       drawUnderground(y);
       drawTrees(x, y, z);
-      drawClouds(x, y, z);
+
+      // if (cloudY < skyLevel + 15) {
+      //   fill(255, 175);
+      //   //stroke(0, 100)
+      //   box(boxSize, boxSize, boxSize, 100);
+      // }
+      drawClouds(x, z);
       pop();
     }
   }
@@ -114,14 +115,7 @@ function drawUnderground(y) {
 
 function drawClouds(x, z) {
   translate(0, skyLevel * 2, 0);
-  let cloudY =
-    (noise(
-      x * resolutionVal + seed + 5000 + terrainChangeSpeed,
-      z * resolutionVal + seed + 5000
-    ) -
-      0.5) *
-    yOffset;
-
+  let cloudY = getNoiseValue(x, z, 5000, yMultiplier);
   if (cloudY < skyLevel + 15) {
     fill(cloudColor);
     box(boxSize, boxSize, boxSize, 100);
@@ -130,13 +124,7 @@ function drawClouds(x, z) {
 
 function drawTrees(x, y, z) {
   stroke(0);
-  let treeChance =
-    (noise(
-      x * resolutionVal + seed + 10000 + terrainChangeSpeed,
-      z * resolutionVal + seed + 10000
-    ) -
-      0.5) *
-    90;
+  let treeChance = getNoiseValue(x, z, 10000, 90);
   if (treeChance > 15 && y > treeLevel && y < sandLevel) {
     // draw tree trunk
     translate(0, -boxSize * 1.5, 0);
@@ -158,6 +146,7 @@ function drawTrees(x, y, z) {
     }
     translate(boxSize, 0, boxSize);
     box(boxSize);
+    translate(0, boxSize * 4, 0);
   }
 }
 
@@ -173,6 +162,17 @@ function getTerrainColor(y) {
   } else {
     fill(deepWaterColor);
   }
+}
+
+function getNoiseValue(x, z, seedOffset, valueMultiplier) {
+  return (
+    (noise(
+      x * resolutionVal + seed + seedOffset + terrainChangeSpeed,
+      z * resolutionVal + seed + seedOffset
+    ) -
+      0.5) *
+    valueMultiplier
+  );
 }
 
 function setStroke(y) {
