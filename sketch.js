@@ -7,7 +7,7 @@ const terrainRange = 100;
 const width = 800;
 
 // tile Levels
-const skyLevel = -45;
+const skyLevel = -60;
 const treeLevel = -50;
 const sandLevel = -15;
 const waterLevel = 5;
@@ -24,7 +24,7 @@ const rockColor = "#62718E";
 const sandColor = "#D4A463";
 const grassColor = "#90A944";
 const treeTrunkColor = "#725F4B";
-const forestColor = "#6D973E";
+const leavesColor = "#6D973E";
 const waterColor = "#1098A688";
 const deepWaterColor = "#023ACA";
 const snowColor = "#ffffff";
@@ -84,7 +84,8 @@ function drawTerrain() {
       push();
       drawBlock(x, y, z);
       drawUnderground(y);
-      drawClouds(x, z);
+      drawTrees(x, y, z);
+      drawClouds(x, y, z);
       pop();
     }
   }
@@ -97,10 +98,12 @@ function drawBlock(x, y, z) {
 }
 
 function drawUnderground(y) {
+  noStroke();
+  if (y > waterLevel) y = waterLevel;
   let boxesUntilBedrock = bedrockLevel - y;
   translate(0, boxesUntilBedrock / 2, 0);
   // no stone under water
-  if (y > waterLevel) {
+  if (y == waterLevel) {
     fill(deepWaterColor);
   } else {
     fill(rockColor);
@@ -119,9 +122,42 @@ function drawClouds(x, z) {
       0.5) *
     yOffset;
 
-  if (cloudY < skyLevel) {
+  if (cloudY < skyLevel + 15) {
     fill(cloudColor);
     box(boxSize, boxSize, boxSize, 100);
+  }
+}
+
+function drawTrees(x, y, z) {
+  stroke(0);
+  let treeChance =
+    (noise(
+      x * resolutionVal + seed + 10000 + terrainChangeSpeed,
+      z * resolutionVal + seed + 10000
+    ) -
+      0.5) *
+    90;
+  if (treeChance > 15 && y > treeLevel && y < sandLevel) {
+    // draw tree trunk
+    translate(0, -boxSize * 1.5, 0);
+    fill(treeTrunkColor);
+    box(boxSize, boxSize * 2, boxSize);
+
+    // draw minecraft leaves
+    translate(-boxSize, -boxSize, -boxSize);
+    fill(leavesColor);
+    for (let i = 0; i < 2; i++) {
+      for (let j = 0; j < 3; j++) {
+        for (let k = 0; k < 3; k++) {
+          box(boxSize * 1);
+          translate(0, 0, boxSize);
+        }
+        translate(boxSize, 0, -boxSize * 3);
+      }
+      translate(-boxSize * 3, -boxSize, 0);
+    }
+    translate(boxSize, 0, boxSize);
+    box(boxSize);
   }
 }
 
