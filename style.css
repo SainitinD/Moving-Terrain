@@ -34,26 +34,3 @@ div {
   margin-left: 5vw;
   font-size: 1.33rem;
 }
-
-/* function handleUI() {
-  var seedChange = 0;
-  if (isMoveTerrain.checked()) {
-    terrainChangeSpeed = 0.05;
-    seed += terrainChangeSpeed;
-  } else {
-    seed += terrainChangeSpeed;
-    terrainChangeSpeed = 0;
-  }
-
-  if (isTrees.checked()) {
-    generateTrees = true;
-  } else {
-    generateTrees = false;
-  }
-
-  if (isClouds.checked()) {
-    generateClouds = true;
-  } else {
-    generateClouds = false;
-  }
-} */
