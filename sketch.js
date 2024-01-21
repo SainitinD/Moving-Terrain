@@ -41,7 +41,10 @@ const z1 = depth / 2;
 /* Global variables */
 var angle = 0;
 var terrainChangeSpeed = 1;
-let seed = 0;
+var seedX = 0;
+var seedZ = 0;
+var generateClouds = false;
+var generateTrees = false;
 
 // global
 
@@ -51,16 +54,50 @@ function setup() {
   cam.setPosition(0, camHeight, orbitRad);
   cam.lookAt(0, 0, 0);
   initializeVars();
+  initializeUI();
   draw();
 }
 
 function initializeVars() {
-  seed = millis() * 10000;
+  seedX = 1; //millis() * 10000;
+  seedZ = 1;
+}
+
+function initializeUI() {
+  isMoveTerrain = createCheckbox("  Move Terrain", true);
+  isClouds = createCheckbox("  Enable Clouds", true);
+  isTrees = createCheckbox("  Enable Trees", true);
+
+  isMoveTerrain.position(windowWidth * 0.05, windowHeight * 0.87);
+  isClouds.position(windowWidth * 0.05, windowHeight * 0.89);
+  isTrees.position(windowWidth * 0.05, windowHeight * 0.91);
+}
+
+function handleUI() {
+  if (isMoveTerrain.checked()) {
+    terrainChangeSpeed = 0.05;
+    seedX += terrainChangeSpeed;
+  } else {
+    terrainChangeSpeed = 0;
+  }
+
+  if (isTrees.checked()) {
+    generateTrees = true;
+  } else {
+    generateTrees = false;
+  }
+
+  if (isClouds.checked()) {
+    generateClouds = true;
+  } else {
+    generateClouds = false;
+  }
 }
 
 function draw() {
   background(0);
-  terrainChangeSpeed = frameCount * 0.08;
+  handleUI();
+  ambientLight(255);
   drawTerrain();
   orbitControl();
 }
@@ -79,14 +116,8 @@ function drawTerrain() {
       push();
       drawBlock(x, y, z);
       drawUnderground(y);
-      drawTrees(x, y, z);
-
-      // if (cloudY < skyLevel + 15) {
-      //   fill(255, 175);
-      //   //stroke(0, 100)
-      //   box(boxSize, boxSize, boxSize, 100);
-      // }
-      drawClouds(x, z);
+      if (generateTrees) drawTrees(x, y, z);
+      if (generateClouds) drawClouds(x, z);
       pop();
     }
   }
@@ -167,8 +198,8 @@ function getTerrainColor(y) {
 function getNoiseValue(x, z, seedOffset, valueMultiplier) {
   return (
     (noise(
-      x * resolutionVal + seed + seedOffset + terrainChangeSpeed,
-      z * resolutionVal + seed + seedOffset
+      x * resolutionVal + seedX + seedOffset + terrainChangeSpeed,
+      z * resolutionVal + seedZ + seedOffset
     ) -
       0.5) *
     valueMultiplier
