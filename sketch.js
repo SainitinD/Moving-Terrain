@@ -17,7 +17,6 @@ const bedrockLevel = 50;
 // camera/movement
 const rotateScale = 1.0;
 const camHeight = -250;
-const orbitRad = 65 * boxSize * 1.2;
 
 // Fill Colors
 const rockColor = "#62718E";
@@ -40,9 +39,10 @@ const z1 = depth / 2;
 
 /* Global variables */
 var angle = 0;
+var orbitRad = 65 * boxSize * 1.2;
 var terrainChangeSpeed = 1;
-var seedX = 0;
-var seedZ = 0;
+var seedX = 1;
+var seedZ = 1;
 var generateClouds = false;
 var generateTrees = false;
 
@@ -50,17 +50,11 @@ var generateTrees = false;
 
 function setup() {
   let canv = createCanvas(windowWidth, windowHeight, WEBGL);
+  initializeUI();
   cam = createCamera();
   cam.setPosition(0, camHeight, orbitRad);
   cam.lookAt(0, 0, 0);
-  initializeVars();
-  initializeUI();
   draw();
-}
-
-function initializeVars() {
-  seedX = 1; //millis() * 10000;
-  seedZ = 1;
 }
 
 function initializeUI() {
@@ -68,9 +62,22 @@ function initializeUI() {
   isClouds = createCheckbox("  Enable Clouds", true);
   isTrees = createCheckbox("  Enable Trees", true);
 
-  isMoveTerrain.position(windowWidth * 0.05, windowHeight * 0.87);
-  isClouds.position(windowWidth * 0.05, windowHeight * 0.89);
-  isTrees.position(windowWidth * 0.05, windowHeight * 0.91);
+  if (windowWidth < 450) {
+    orbitRad = 150 * boxSize * 1.2;
+    isMoveTerrain.position(windowWidth * 0.05, windowHeight * 0.84);
+    isClouds.position(windowWidth * 0.05, windowHeight * 0.87);
+    isTrees.position(windowWidth * 0.05, windowHeight * 0.9);
+  } else if (windowWidth < 600) {
+    orbitRad = 150 * boxSize * 1.2;
+    isMoveTerrain.position(windowWidth * 0.05, windowHeight * 0.83);
+    isClouds.position(windowWidth * 0.05, windowHeight * 0.87);
+    isTrees.position(windowWidth * 0.05, windowHeight * 0.91);
+  } else {
+    orbitRad = 65 * boxSize * 1.2;
+    isMoveTerrain.position(windowWidth * 0.05, windowHeight * 0.87);
+    isClouds.position(windowWidth * 0.05, windowHeight * 0.89);
+    isTrees.position(windowWidth * 0.05, windowHeight * 0.91);
+  }
 }
 
 function handleUI() {
@@ -96,10 +103,20 @@ function handleUI() {
 
 function draw() {
   background(0);
-  handleUI();
   ambientLight(255);
+  rotateTerrain();
+  handleUI();
   drawTerrain();
   orbitControl();
+}
+
+function rotateTerrain() {
+  if (!mouseIsPressed) {
+    angle += 0.01;
+    rotateY(angle);
+  } else {
+    rotateY(angle);
+  }
 }
 
 function drawTerrain() {
@@ -156,7 +173,7 @@ function drawClouds(x, z) {
 function drawTrees(x, y, z) {
   stroke(0);
   let treeChance = getNoiseValue(x, z, 10000, 90);
-  if (treeChance > 15 && y > treeLevel && y < sandLevel) {
+  if (treeChance > 15 && y > treeLevel + 5 && y < sandLevel) {
     // draw tree trunk
     translate(0, -boxSize * 1.5, 0);
     fill(treeTrunkColor);

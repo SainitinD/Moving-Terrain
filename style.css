@@ -15,6 +15,26 @@ span {
   padding-top: 1rem;
 }
 
+p {
+  color: white;
+  position: absolute;
+  right: 5vw;
+  top: 5vh;
+}
+
+div {
+  margin-top: 1rem;
+}
+
+.title {
+  color: white;
+  position: absolute;
+  bottom: 14vh;
+  font-weight: normal;
+  margin-left: 5vw;
+  font-size: 1.33rem;
+}
+
 /* function handleUI() {
   var seedChange = 0;
   if (isMoveTerrain.checked()) {
