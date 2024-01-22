@@ -1,10 +1,10 @@
 /* Constants */
 // terrain
 const boxSize = 10;
-const depth = 400;
+const depth = 300;
 const resolutionVal = 0.007;
 const terrainRange = 100;
-const width = 800;
+const width = 600;
 
 // tile Levels
 const skyLevel = -60;
